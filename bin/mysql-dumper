@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+var runner = require('../index.js');
+var argv = require('minimist')(process.argv.slice(2));
+
+var fs = require('fs');
+
+/**
+ * Config
+ *
+ * -c config file
+ * argument folder
+ */
+
+var config = JSON.parse(fs.readFileSync(argv.c, 'utf8'));
+
+runner.run(config, argv._[0]);
