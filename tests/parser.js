@@ -62,10 +62,7 @@ describe('parse function', function() {
     it('should evaluate complex combination', function(done) {
         Parser.setTables({
             MyTable: {
-                where: 'id_key1 = " $foo "'
-            },
-            MyTable2: {
-                where: 'id_key in ($$MyTable2.field2)'
+                where: 'id_key1 = "$foo"'
             }
         });
 
@@ -77,9 +74,30 @@ describe('parse function', function() {
         });
 
         Parser.parse('$$MyTable.field').then(function(result) {
-            // okoko yeahh ok
-            console.log(result, 'dasadsadsdsa');
-            expect(result).to.equal('select field from MyTable where id_key1 = " okoko yeahh ok "');
+            expect(result).to.equal('select field from MyTable where id_key1 = "okoko yeahh ok"');
+            done();
+        });
+    });
+
+    it('should evaluate complex combination', function(done) {
+        Parser.setTables({
+            MyTable1: {
+                where: 'id_key1 = "$foo"'
+            },
+            MyTable2: {
+                where: 'id_key in ($$MyTable1.field2) or id_key2 in ($$MyTable1.field4)'
+            }
+        });
+
+        Parser.setRefs({
+            foo: '$bar $baz ok',
+            bar: '$qux',
+            baz: 'yeahh',
+            qux: 'okoko'
+        });
+
+        Parser.parse('$$MyTable2.field').then(function(result) {
+            expect(result).to.equal('select field from MyTable2 where id_key in (select field2 from MyTable1 where id_key1 = "okoko yeahh ok") or id_key2 in (select field4 from MyTable1 where id_key1 = "okoko yeahh ok")');
             done();
         });
     });
