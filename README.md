@@ -1,7 +1,7 @@
 Mysql-dumper
 ============
 
-With this little tool you can automatize a smartysh db minidump using a config file. See doc for definition of the config file.
+With this little tool you can automatize a smartysh db minidump using a [config file](config.example.json). See doc for definition of the config file.
 
 #Runing it
 
