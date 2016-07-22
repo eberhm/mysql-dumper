@@ -1,0 +1,27 @@
+{
+  "user": "my-username",
+  "passwd": "my-passwrod",
+  "host": "db.hostname.com",
+  "database": "db_to_export",
+  "refs": {
+    "var_A": "select id from TableA where id_parent = 68"
+  },
+  "blocks": {
+    "any block name": {
+      "tables": {
+        "TableB": {
+          "where": "id in ($var_A)"
+        },
+        "TableC": {
+          "where": "id in ($$TableB.id)"
+        },
+        "TableD": {
+          "where": "id in ($$TableB.someColumn)"
+        },
+        "TableE": {
+          "where": "someSpecificColumn in ($$TableC.someOtherColumn)"
+        }
+      }
+    }
+  }
+}
