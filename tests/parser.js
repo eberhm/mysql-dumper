@@ -9,6 +9,14 @@ describe('parse function', function() {
         });
     });
 
+
+    it('should return a promise with empty string when resolved when no exp is passed', function(done) {
+        Parser.parse().then(function(result) {
+            expect(result).to.equal('');
+            done();
+        });
+    });
+
     it('should exists and return a promise with the same string if a simple string is passed', function(done) {
         Parser.parse('okok').then(function(result) {
             expect(result).to.equal('okok');

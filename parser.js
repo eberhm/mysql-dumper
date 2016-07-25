@@ -24,16 +24,19 @@ var TableExp = function(name, field, where) {
 
 function tokenize(exp) {
     var tokens ;
-    var byTableExp = exp.split(/(\${2}(?:\w*)\.(?:\w*))/gi);
-    
-    tokens = _.flatMap(byTableExp, function(elem) {
+    if (exp) {
+        var byTableExp = exp.split(/(\${2}(?:\w*)\.(?:\w*))/gi);
+
+        tokens = _.flatMap(byTableExp, function(elem) {
             if (TableRegExp.test(elem)) {
                 return [elem];
             } else {
                 return elem.split(/(\${1}\w+)/gi);
             }
         });
-    
+    } else {
+        tokens = [''];
+    }
     return tokens.map(createExpType);
 }
 
