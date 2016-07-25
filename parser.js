@@ -35,7 +35,7 @@ function tokenize(exp) {
             }
         });
     } else {
-        tokens = [''];
+        tokens = ['1 = 1'];
     }
     return tokens.map(createExpType);
 }

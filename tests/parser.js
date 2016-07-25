@@ -12,7 +12,7 @@ describe('parse function', function() {
 
     it('should return a promise with empty string when resolved when no exp is passed', function(done) {
         Parser.parse().then(function(result) {
-            expect(result).to.equal('');
+            expect(result).to.equal('1 = 1');
             done();
         });
     });
