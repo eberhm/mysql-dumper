@@ -16,9 +16,9 @@ var run = function(config, destFolder) {
     _.map(config.blocks, function(block, blockName) {
         Parser.setTables(block.tables);
         _.map(block.tables, function(table, tableName) {
-            Parser.parse(table.where).then(function(where) {
-                Dumper.dump(tableName, where, destFolder);
-            });
+                Parser.parse(table.where).then(function(where) {
+                    Dumper.dump(tableName, where, destFolder);
+                });
         });
     });
 };

@@ -17,6 +17,10 @@ describe('parse function', function() {
         });
     });
 
+    it('should throw an exception if table is undefined', function() {
+        expect(Parser.parse.bind(Parser, '$$UndefinedTable.id')).to.throw('Undefined table:UndefinedTable');
+    });
+
     it('should exists and return a promise with the same string if a simple string is passed', function(done) {
         Parser.parse('okok').then(function(result) {
             expect(result).to.equal('okok');

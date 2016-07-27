@@ -3,7 +3,7 @@
 var q = require('q');
 var _ = require('lodash');
 
-var refs, tables;
+var refs = {}, tables = {};
 
 var TableRegExp = /(\${2}(?:\w*)\.(?:\w*))/gi;
 
@@ -44,7 +44,11 @@ function createExpType(part) {
     if (/\${2}\w+\.{1}\w+/gi.test(part)) {
         var matches = /\${2}(.*)\.(.*)/.exec(part);
         var tableName = matches[1];
-        return new TableExp(tableName, matches[2], tables[tableName].where);
+        var table = tables[tableName];
+        if (!table) {
+            throw new Error('Undefined table:' + tableName);
+        }
+        return new TableExp(tableName, matches[2], table.where);
     }
     else if (/\${1}\w*/.test(part)) return new RefExp(part);
     else return new StringExp(part);
