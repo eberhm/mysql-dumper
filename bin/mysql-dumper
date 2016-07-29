@@ -15,7 +15,7 @@ var fs = require('fs');
 var config = JSON.parse(fs.readFileSync(argv.c, 'utf8'));
 
 try {
-    runner.run(config, argv._[0]);
+    runner.run(config, argv._[0], argv.b, argv.d);
 } catch (e) {
     console.log(e.message);
 }

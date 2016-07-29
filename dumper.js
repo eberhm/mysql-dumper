@@ -7,30 +7,40 @@ var config = {};
 
 
 
-function dump(tableName, where, destFolder) {
+function dump(tableName, where, destFolder, dryRun) {
     console.log('Dumping...', tableName, ' in ', destFolder);
     var command = 'mysqldump -u' + config.user + ' -p' + config.passwd +
         ' -h ' + config.host + ' --opt -c -e ' + config.database + ' ' + tableName +
-        ' --where="' + where +  '" --single-transaction > ' + destFolder + tableName + '.dump.sql';
-    exec(
-        command,
-        function (error, stdout, stderr) {
-            console.log('Done dumping...', tableName, ' in ', destFolder);
-        }
-    );
+        ' --where="' + where +  '" -t --single-transaction > ' + destFolder + tableName + '.dump.sql';
+
+    if (dryRun) {
+        console.log(command);
+    } else {
+        exec(
+            command,
+            function (error, stdout, stderr) {
+                console.log('Done dumping...', tableName, ' in ', destFolder);
+            }
+        );
+    }
 }
 
-function dumpDatabase(database, destFolder) {
+function dumpDatabase(database, destFolder, dryRun) {
     console.log('Dumping database schema...', database, 'in ', destFolder);
     var command = 'mysqldump -u' + config.user + ' -p' + config.passwd +
         ' -h ' + config.host + ' --opt -c -e ' + database +
         ' --no-data > ' + destFolder + database + '.db.dump.sql';
-    exec(
-        command,
-        function (error, stdout, stderr) {
-            console.log('Done dumping database ', database);
-        }
-    );
+
+    if (dryRun) {
+        console.log(command);
+    } else {
+        exec(
+            command,
+            function (error, stdout, stderr) {
+                console.log('Done dumping database ', database);
+            }
+        );
+    }
 }
 
 exports.dump = dump;
