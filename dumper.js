@@ -1,11 +1,10 @@
 'use strict';
-
-var exec = require('child_process').exec;
+var Parser = require('./parser.js');
+var proc = require('child_process');
+var _ = require('lodash');
+var q = require('q');
 
 var config = {};
-
-
-
 
 function dump(tableName, where, destFolder, dryRun) {
     console.log('Dumping...', tableName, ' in ', destFolder);
@@ -16,7 +15,7 @@ function dump(tableName, where, destFolder, dryRun) {
     if (dryRun) {
         console.log(command);
     } else {
-        exec(
+        proc.exec(
             command,
             function (error, stdout, stderr) {
                 console.log('Done dumping...', tableName, ' in ', destFolder);
@@ -25,26 +24,49 @@ function dump(tableName, where, destFolder, dryRun) {
     }
 }
 
-function dumpDatabase(database, destFolder, dryRun) {
-    console.log('Dumping database schema...', database, 'in ', destFolder);
+function dumpDatabase(destFolder, dryRun) {
+    console.log('Dumping database schema...', config.database, 'in ', destFolder);
     var command = 'mysqldump -u' + config.user + ' -p' + config.passwd +
-        ' -h ' + config.host + ' --opt -c -e ' + database +
-        ' --no-data > ' + destFolder + database + '.db.dump.sql';
+        ' -h ' + config.host + ' --opt -c -e ' + config.database +
+        ' --no-data > ' + destFolder + config.database + '.db.dump.sql';
 
     if (dryRun) {
         console.log(command);
     } else {
-        exec(
+        proc.exec(
             command,
             function (error, stdout, stderr) {
-                console.log('Done dumping database ', database);
+                console.log('Done dumping database ', config.database);
             }
         );
     }
 }
 
-exports.dump = dump;
-exports.dumpDatabase = dumpDatabase;
+function dumpBlock(blockName, destFolder, dryRun) {
+    var deferred = q.defer();
+    var block = config.blocks[blockName];
+
+    Parser.setTables(block.tables);
+
+    var tablesParsed = _.map(block.tables, function(table, tableName) {
+        return Parser.parse(table.where).then(function(where) {
+            dump(tableName, where, destFolder, dryRun);
+            return where;
+        });
+    });
+
+    q.all(tablesParsed).then(deferred.resolve);
+
+    return deferred.promise;
+}
+
 exports.setConfig = function(_config) {
     config = _config;
+    Parser.setRefs(config.refs);
+    _.map(config.blocks, function(block, blockName) {
+        Parser.setTables(block.tables, blockName);
+    });
 };
+
+exports.dumpDatabase = dumpDatabase;
+exports.dumpBlock = dumpBlock;

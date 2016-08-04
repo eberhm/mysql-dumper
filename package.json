@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "chai": "^3.5.0"
+    "chai": "^3.5.0",
+    "sinon": "^1.17.5"
   },
   "dependencies": {
     "lodash": "^4.13.1",
