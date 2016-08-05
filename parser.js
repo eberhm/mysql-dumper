@@ -52,7 +52,7 @@ function createExpType(part) {
         var table = (tables[contextName || context] || {})[tableName];
 
         if (!table) {
-            throw new Error('Undefined table:' + tableName);
+            throw new Error('Undefined table: ' + tableName + ' in context: ' + context);
         }
         return new TableExp(tableName, matches[3], table.where, contextName);
     }

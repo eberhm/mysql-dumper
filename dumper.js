@@ -46,10 +46,10 @@ function dumpBlock(blockName, destFolder, dryRun) {
     var deferred = q.defer();
     var block = config.blocks[blockName];
 
-    Parser.setTables(block.tables);
+    Parser.setContext(blockName);
 
     var tablesParsed = _.map(block.tables, function(table, tableName) {
-        return Parser.parse(table.where).then(function(where) {
+        return Parser.parse(table.where, blockName).then(function(where) {
             dump(tableName, where, destFolder, dryRun);
             return where;
         });
