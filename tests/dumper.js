@@ -63,8 +63,8 @@ describe('dumpBlock function', function() {
 
         Dumper.dumpBlock('anyBlock', 'any destination').then(function(results) {
             expect(exec.callCount).to.equal(2);
-            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction > any destinationanyTable.dump.sql')).to.be.true;
-            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction > any destinationanotherTable.dump.sql')).to.be.true;
+            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction > any destinationanyBlock.anyTable.data.sql')).to.be.true;
+            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction > any destinationanyBlock.anotherTable.data.sql')).to.be.true;
             done();
         });
     });
@@ -104,8 +104,100 @@ describe('dumpBlock function', function() {
                     'id = select anyField from block1Table where id = select anyField from anyTable where id = 1'
                 ]
             );
-            // expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction > any destinationanyTable.dump.sql')).to.be.true;
-            // expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction > any destinationanotherTable.dump.sql')).to.be.true;
+            done();
+        });
+    });
+
+    it('should try dumping on error', function(done) {
+        Dumper.setConfig({
+            host: "anyHost",
+            user: "anyUser",
+            passwd: "anyPass",
+            database: "anyDatabase",
+            blocks: {
+                block1 : {
+                    tables: {
+                        block1Table: {
+                            where: 'id = 1'
+                        }
+                    }
+                }
+            }
+        });
+
+        exec.onFirstCall().yields([{'error': 1}]);
+        exec.onSecondCall().yields([{'error': 1}]);
+
+        Dumper.dumpBlock('block1', 'any destination').then(function(results) {
+            expect(exec.callCount).to.equal(3);
+            expect(results).to.deep.equal(['id = 1']);
+            done();
+        });
+    });
+
+    it('should try dumping on error for MAX_ATTEMPTS times', function(done) {
+
+        const MAX_ATTEMPTS = 5;
+
+        Dumper.setConfig({
+            host: "anyHost",
+            user: "anyUser",
+            passwd: "anyPass",
+            database: "anyDatabase",
+            blocks: {
+                block1 : {
+                    tables: {
+                        block1Table: {
+                            where: 'id = 1'
+                        }
+                    }
+                }
+            }
+        });
+
+        exec.onCall(0).yields([{'error': 1}]);
+        exec.onCall(1).yields([{'error': 1}]);
+        exec.onCall(2).yields([{'error': 1}]);
+        exec.onCall(3).yields([{'error': 1}]);
+        exec.onCall(4).yields([{'error': 1}]);
+        exec.onCall(5).yields([{'error': 1}]);
+        exec.onCall(6).yields([{'error': 1}]);
+
+        Dumper.dumpBlock('block1', 'any destination').then(function(results) {
+            expect(exec.callCount).to.equal(MAX_ATTEMPTS);
+            expect(results).to.deep.equal(['id = 1']);
+            done();
+        });
+    });
+
+    it('should try dumping on error for MAX_ATTEMPTS times and not count as attempt when it can be recovered', function(done) {
+
+        Dumper.setConfig({
+            host: "anyHost",
+            user: "anyUser",
+            passwd: "anyPass",
+            database: "anyDatabase",
+            blocks: {
+                block1 : {
+                    tables: {
+                        block1Table: {
+                            where: 'id = 1'
+                        }
+                    }
+                }
+            }
+        });
+
+        exec.onCall(0).yields({'error': 1});
+        exec.onCall(1).yields({'code': 'EAGAIN'});
+        exec.onCall(2).yields({'error': 1});
+        exec.onCall(3).yields({'code': 'EAGAIN'});
+        exec.onCall(4).yields({'code': 'EAGAIN'});
+        exec.onCall(5).yields({'error': 1});
+
+        Dumper.dumpBlock('block1', 'any destination').then(function(results) {
+            expect(exec.callCount).to.equal(7);
+            expect(results).to.deep.equal(['id = 1']);
             done();
         });
     });
@@ -133,6 +225,6 @@ describe('dumpDatabase function', function() {
         Dumper.dumpDatabase('any destination');
 
         expect(exec.called).to.be.true;
-        expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase --no-data > any destinationanyDatabase.db.dump.sql')).to.be.true;
+        expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase --no-data > any destinationanyDatabase.schema.sql')).to.be.true;
     });
 });
