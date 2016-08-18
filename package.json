@@ -1,6 +1,6 @@
 {
   "name": "mysql-dumper",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "Tool for creating a minidump for mysql",
   "main": "index.js",
   "scripts": {
