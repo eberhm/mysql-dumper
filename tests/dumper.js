@@ -1,6 +1,6 @@
 var chai = require('chai');
 var expect = chai.expect;
-var Dumper = require('./../dumper.js');
+var Dumper = require('./../lib/dumper');
 var sinon = require('sinon');
 var proc = require('child_process');
 var exec;
