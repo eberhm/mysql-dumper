@@ -63,8 +63,8 @@ describe('dumpBlock function', function() {
 
         Dumper.dumpBlock('anyBlock', 'any destination').then(function(results) {
             expect(exec.callCount).to.equal(2);
-            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction > any destinationanyBlock.anyTable.data.sql')).to.be.true;
-            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction > any destinationanyBlock.anotherTable.data.sql')).to.be.true;
+            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction --skip-triggers > any destinationanyBlock.anyTable.data.sql')).to.be.true;
+            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction --skip-triggers > any destinationanyBlock.anotherTable.data.sql')).to.be.true;
             done();
         });
     });
