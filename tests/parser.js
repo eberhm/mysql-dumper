@@ -1,15 +1,13 @@
-var chai = require('chai');
-var expect = chai.expect;
-var Parser = require('./../lib/parser');
+let chai = require('chai');
+let expect = chai.expect;
+let Parser = require('./../lib/parser');
 
 describe('parse function', function() {
 
     beforeEach(Parser.reset);
 
     it('should exists and return a promise', function(done) {
-        Parser.parse('anything').then(function(result) {
-            done();
-        });
+        Parser.parse('anything').then(done);
     });
 
 
