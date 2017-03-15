@@ -1,13 +1,14 @@
-var chai = require('chai');
-var expect = chai.expect;
-var Dumper = require('./../lib/dumper');
-var sinon = require('sinon');
-var proc = require('child_process');
-var exec;
+let chai = require('chai');
+let expect = chai.expect;
+let Dumper = require('./../lib/dumper');
+let sinon = require('sinon');
+let proc = require('child_process');
+let exec;
 
 
 beforeEach(function(){
     exec = sinon.stub(proc, 'exec');
+    exec.yields();
 });
 
 afterEach(function(){
@@ -127,6 +128,7 @@ describe('dumpBlock function', function() {
 
         exec.onFirstCall().yields([{'error': 1}]);
         exec.onSecondCall().yields([{'error': 1}]);
+        exec.onCall(2).yields();
 
         Dumper.dumpBlock('block1', 'any destination').then(function(results) {
             expect(exec.callCount).to.equal(3);
@@ -135,7 +137,7 @@ describe('dumpBlock function', function() {
         });
     });
 
-    it('should try dumping on error for MAX_ATTEMPTS times', function(done) {
+    it('should try dumping on error for MAX_ATTEMPTS times and then reject', function(done) {
 
         const MAX_ATTEMPTS = 5;
 
@@ -163,9 +165,9 @@ describe('dumpBlock function', function() {
         exec.onCall(5).yields([{'error': 1}]);
         exec.onCall(6).yields([{'error': 1}]);
 
-        Dumper.dumpBlock('block1', 'any destination').then(function(results) {
+        Dumper.dumpBlock('block1', 'any destination').fail(function(results) {
             expect(exec.callCount).to.equal(MAX_ATTEMPTS);
-            expect(results).to.deep.equal(['id = 1']);
+            expect(results.message).to.equal('id = 1');
             done();
         });
     });
@@ -194,6 +196,7 @@ describe('dumpBlock function', function() {
         exec.onCall(3).yields({'code': 'EAGAIN'});
         exec.onCall(4).yields({'code': 'EAGAIN'});
         exec.onCall(5).yields({'error': 1});
+        exec.onCall(6).yields();
 
         Dumper.dumpBlock('block1', 'any destination').then(function(results) {
             expect(exec.callCount).to.equal(7);
