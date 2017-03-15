@@ -7,7 +7,9 @@ describe('parse function', function() {
     beforeEach(Parser.reset);
 
     it('should exists and return a promise', function(done) {
-        Parser.parse('anything').then(done);
+        Parser.parse('anything').then(() => {
+            done();
+        });
     });
 
 
