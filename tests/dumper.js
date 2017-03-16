@@ -50,6 +50,7 @@ describe('dumpBlock function', function() {
             passwd: "anyPass",
             database: "anyDatabase",
             retryDelay: 1,
+            port: 1234,
             blocks: {
                 anyBlock : {
                     tables: {
@@ -66,8 +67,33 @@ describe('dumpBlock function', function() {
 
         Dumper.dumpBlock('anyBlock', 'any destination').then(function(results) {
             expect(exec.callCount).to.equal(2);
-            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction --skip-triggers > any destinationanyBlock.anyTable.data.sql')).to.be.true;
-            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction --skip-triggers > any destinationanyBlock.anotherTable.data.sql')).to.be.true;
+            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost -P 1234 --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction --skip-triggers > any destinationanyBlock.anyTable.data.sql')).to.be.true;
+            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost -P 1234 --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction --skip-triggers > any destinationanyBlock.anotherTable.data.sql')).to.be.true;
+            done();
+        });
+    });
+
+    it('should call exec with the default port', function(done) {
+        Dumper.setConfig({
+            host: "anyHost",
+            user: "anyUser",
+            passwd: "anyPass",
+            database: "anyDatabase",
+            retryDelay: 1,
+            blocks: {
+                anyBlock : {
+                    tables: {
+                        anyTable: {
+                            where: 'id = 1'
+                        }
+                    }
+                }
+            }
+        });
+
+        Dumper.dumpBlock('anyBlock', 'any destination').then(function(results) {
+            expect(exec.callCount).to.equal(1);
+            expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost -P 3306 --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction --skip-triggers > any destinationanyBlock.anyTable.data.sql')).to.be.true;
             done();
         });
     });
@@ -235,6 +261,6 @@ describe('dumpDatabase function', function() {
         Dumper.dumpDatabase('any destination');
 
         expect(exec.called).to.be.true;
-        expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase --no-data --routines > any destinationanyDatabase.schema.sql')).to.be.true;
+        expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost -P 3306 --opt -c -e anyDatabase --no-data --routines > any destinationanyDatabase.schema.sql')).to.be.true;
     });
 });
