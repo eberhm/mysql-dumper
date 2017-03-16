@@ -15,6 +15,34 @@ afterEach(function(){
     exec.restore();
 });
 
+
+describe('When setting config in dumper', function() {
+    it('should return default config if no config is passed', function() {
+        Dumper.setConfig({});
+
+        let config = Dumper.getConfig();
+
+        expect(config.port).to.equal(3306);
+        expect(config.concurrent).to.equal(200);
+        expect(config.retryDelay).to.equal(5000);
+    });
+
+    it('should merge with default config', function() {
+        Dumper.setConfig({
+            port: 1234,
+            concurrent: 4321,
+            retryDelay: 3333
+        });
+
+        let config = Dumper.getConfig();
+
+        expect(config.port).to.equal(1234);
+        expect(config.concurrent).to.equal(4321);
+        expect(config.retryDelay).to.equal(3333);
+
+    });
+});
+
 describe('dumpBlock function', function() {
 
     it('should exists', function() {
@@ -65,7 +93,7 @@ describe('dumpBlock function', function() {
             }
         });
 
-        Dumper.dumpBlock('anyBlock', 'any destination').then(function(results) {
+        Dumper.dumpBlock('anyBlock', 'any destination').then(function() {
             expect(exec.callCount).to.equal(2);
             expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost -P 1234 --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction --skip-triggers > any destinationanyBlock.anyTable.data.sql')).to.be.true;
             expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost -P 1234 --opt -c -e anyDatabase anotherTable --where="id = 2" -t --single-transaction --skip-triggers > any destinationanyBlock.anotherTable.data.sql')).to.be.true;
@@ -91,7 +119,7 @@ describe('dumpBlock function', function() {
             }
         });
 
-        Dumper.dumpBlock('anyBlock', 'any destination').then(function(results) {
+        Dumper.dumpBlock('anyBlock', 'any destination').then(function() {
             expect(exec.callCount).to.equal(1);
             expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost -P 3306 --opt -c -e anyDatabase anyTable --where="id = 1" -t --single-transaction --skip-triggers > any destinationanyBlock.anyTable.data.sql')).to.be.true;
             done();
