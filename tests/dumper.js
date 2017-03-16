@@ -27,6 +27,7 @@ describe('dumpBlock function', function() {
             user: "anyUser",
             passwd: "anyPass",
             database: "anyDatabase",
+            retryDelay: 1,
             blocks: {
                 anyBlock : {
                     tables: {
@@ -48,6 +49,7 @@ describe('dumpBlock function', function() {
             user: "anyUser",
             passwd: "anyPass",
             database: "anyDatabase",
+            retryDelay: 1,
             blocks: {
                 anyBlock : {
                     tables: {
@@ -76,6 +78,7 @@ describe('dumpBlock function', function() {
             user: "anyUser",
             passwd: "anyPass",
             database: "anyDatabase",
+            retryDelay: 1,
             blocks: {
                 block1 : {
                     tables: {
@@ -115,6 +118,7 @@ describe('dumpBlock function', function() {
             user: "anyUser",
             passwd: "anyPass",
             database: "anyDatabase",
+            retryDelay: 1,
             blocks: {
                 block1 : {
                     tables: {
@@ -146,6 +150,7 @@ describe('dumpBlock function', function() {
             user: "anyUser",
             passwd: "anyPass",
             database: "anyDatabase",
+            retryDelay: 1,
             blocks: {
                 block1 : {
                     tables: {
@@ -179,6 +184,7 @@ describe('dumpBlock function', function() {
             user: "anyUser",
             passwd: "anyPass",
             database: "anyDatabase",
+            retryDelay: 1,
             blocks: {
                 block1 : {
                     tables: {
@@ -222,12 +228,13 @@ describe('dumpDatabase function', function() {
             host: "anyHost",
             user: "anyUser",
             passwd: "anyPass",
-            database: "anyDatabase"
+            database: "anyDatabase",
+            retryDelay: 1
         });
 
         Dumper.dumpDatabase('any destination');
 
         expect(exec.called).to.be.true;
-        expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase --no-data > any destinationanyDatabase.schema.sql')).to.be.true;
+        expect(exec.calledWith('mysqldump -uanyUser -panyPass -h anyHost --opt -c -e anyDatabase --no-data --routines > any destinationanyDatabase.schema.sql')).to.be.true;
     });
 });
