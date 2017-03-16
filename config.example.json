@@ -4,6 +4,7 @@
   "host": "db.hostname.com",
   "database": "db_to_export",
   "concurrent": 100,
+  "retryDelay": 5000,
   "refs": {
     "var_A": "select id from TableA where id_parent = 68"
   },
