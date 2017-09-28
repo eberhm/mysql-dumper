@@ -2,7 +2,8 @@
   "name": "mysql-dumper",
   "version": "6.1.0",
   "description": "Tool for creating a minidump for mysql",
-  "main": "index.js",
+  "main": "lib",
+  "bin": "bin/mysql-dumper",
   "scripts": {
     "test": "mocha tests"
   },
